@@ -1,0 +1,12 @@
+*.log
+.ipynb_checkpoints
+Untitled*.ipynb
+.gitignore
+*.model
+__pycache__
+*.py[co]
+data/
+nets/
+exp/
+log/
+test/
