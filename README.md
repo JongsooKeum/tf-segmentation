@@ -1,5 +1,5 @@
 # semantic-segmentation-tf
-Object-detection-tutorials with GCN
+Object-detection-tutorials with Encoder-Decoder
 
 # Contributor
 - Jongsoo Keum
