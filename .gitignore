@@ -1,5 +1,7 @@
 *.log
 .ipynb_checkpoints
+*.ckpt*
+checkpoint
 Untitled*.ipynb
 .gitignore
 *.model
