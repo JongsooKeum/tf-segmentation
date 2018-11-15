@@ -1,6 +1,6 @@
 from abc import abstractmethod, abstractproperty, ABCMeta
 import numpy as np
-from learning.utils import computeIoU
+from sklearn.metrics import accuracy_score
 
 class Evaluator(metaclass=ABCMeta):
     """Base class for evaluation functions."""
@@ -44,7 +44,7 @@ class Evaluator(metaclass=ABCMeta):
         """
         pass
 
-class ErrorRateEvaluator(Evaluator):
+class AccuracyEvaluator(Evaluator):
 
     @property
     def worst_score(self):
@@ -57,8 +57,11 @@ class ErrorRateEvaluator(Evaluator):
         return 'max'
 
     def score(self, y_true, y_pred):
-
-        return computeIoU(y_pred, y_true)
+        acc = []
+        for t, p in zip(y_true, y_pred):
+            acc.append(accuracy_score(t.argmax(axis=-1).reshape(-1),
+                                      p.argmax(axis=-1).reshape(-1)))
+        return sum(acc)/len(acc)
 
     def is_better(self, curr, best, **kwargs):
 

@@ -24,12 +24,12 @@ class Optimizer(metaclass=ABCMeta):
 		self.val_set = val_set
 
 		# Training hyperparameters
-		self.batch_size = kwargs.pop('batch_size', 64)
+		self.batch_size = kwargs.pop('batch_size', 32)
 		self.num_epochs = kwargs.pop('num_epochs', 300)
 		self.init_learning_rate = kwargs.pop('init_learning_rate', 0.001)
 
 		self.learning_rate_placeholder = tf.placeholder(tf.float32)
-		self.optimize = self.__optimize_op()
+		self.optimize = self._optimize_op()
 
 		self._reset()
 
@@ -49,7 +49,7 @@ class Optimizer(metaclass=ABCMeta):
 		pass
 
 	@abstractmethod
-	def _update_learning_rate(self, ""kwargs):
+	def _update_learning_rate(self, **kwargs):
 		"""
 		Update current learning rate (if needed) on every epcoh, by its own schedule.
 		This should be implemented, and should not be called manually.
@@ -67,12 +67,12 @@ class Optimizer(metaclass=ABCMeta):
 		"""
 
 		# Sample a single batch
-		X, y_true = self.train_set.next_batch(self.batch_size, shuffle=True, is_train=True)
+		X, y_true = self.train_set.next_batch(self.batch_size, shuffle=True)
 
 		# Compute the loss and make update
 		_, loss, y_pred = \
-			sess.run([self.optimize, self,model.loss, self.model.pred],
-				feed_dict={self.model.X: X, self.model.y: y_true, self.model.is_train; True, self.learning_rate_placeholder: self.curr_learning_rate})
+			sess.run([self.optimize, self.model.loss, self.model.pred],
+				feed_dict={self.model.X: X, self.model.y: y_true, self.model.is_train: True, self.learning_rate_placeholder: self.curr_learning_rate})
 
 		return loss, y_true, y_pred
 
@@ -104,7 +104,7 @@ class Optimizer(metaclass=ABCMeta):
 		# Start training loop
 		for i in range(num_steps):
 			# Perform a gradient update from a single minibatch
-			step_loss, step_y_true, step_y_pred = self._step(sess, **kwargs)
+			step_loss, step_y_true, step_y_pred = self._step(sess)
 			step_losses.append(step_loss)
 
 			# Perform evaluation in the end of each epoch
@@ -147,20 +147,20 @@ class Optimizer(metaclass=ABCMeta):
 				self._update_learning_rate(**kwargs)
 				self.curr_epoch += 1
 
-			if verbose:
-				print('Total training time(sec): {}'.format(time.time() - start_time))
-				print('Best {} score: {}'.format('evaluation' if eval else 'training', self.best_score))
+		if verbose:
+			print('Total training time(sec): {}'.format(time.time() - start_time))
+			print('Best {} score: {}'.format('evaluation' if eval else 'training', self.best_score))
 
-			print('Done.')
+		print('Done.')
 
-			if details:
-				# Store training results in a dictionary
-				train_results['step_losses'] = step_losses
-				train_results['step_scores'] = step_scores
-				if self.val_set is not None:
-					train_results['eval_scores'] = eval_scores
+		if details:
+			# Store training results in a dictionary
+			train_results['step_losses'] = step_losses
+			train_results['step_scores'] = step_scores
+			if self.val_set is not None:
+				train_results['eval_scores'] = eval_scores
 
-				return train_results
+			return train_results
 
 class MomentumOptimizer(Optimizer):
 	"""Gradient descent optimizer, with Momentum algorithm."""
@@ -212,6 +212,7 @@ class AdamOptimizer(Optimizer):
         momentum = kwargs.pop('momentum', 0.9)
         extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         update_vars = tf.trainable_variables()
+
         with tf.control_dependencies(extra_update_ops):
             train_op = tf.train.AdamOptimizer(self.learning_rate_placeholder, momentum).minimize(
                 self.model.loss, var_list=update_vars)

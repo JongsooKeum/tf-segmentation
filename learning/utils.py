@@ -1,4 +1,5 @@
 import os
+import cv2
 import pickle as pkl
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,34 +40,6 @@ def plot_learning_curve(exp_idx, step_losses, step_scores, eval_scores=None,
         pkl.dump([step_losses, step_scores, eval_scores], fo)
     plt.close()
 
-def pixelAccuracy(y_pred, y_true, class_idx):
-    y_pred = np.argmax(y_pred, axis=0)
-    y_true = np.squeeze(y_true, axis=0)
-
-    tp = np.sum((y_pred == y_true)*(y_true == class_idx))
-    fp = np.sum((y_pred == class_idx)) - tp
-    fn = np.sum((y_true == class_idx)) - tp
-
-    if (tp+fp+fn) == 0:
-        return -1.0
-    return np.asarray(1.0 * tp / (tp + fp + fn))
-
-def computeIoU(y_pred_batch, y_true_batch):
-    class_num = y_pred_batch.shape[1]
-    iou = np.zeros(class_num)
-    for class_idx in range(class_num):
-        pixelAcc = [pixelAccuracy(y_pred_batch[i], y_true_batch[i], class_idx) \
-         for i in range(y_true_batch.shape[0])]
-        iou[class_idx] = meanIoU(pixelAcc)
-    return np.mean(iou[1:])
-
-def meanIoU(acc_list):
-    acc_list = [x for x in acc_list if x != -1.0]
-
-    if not acc_list:
-        return -1.0
-    return np.mean([x for x in acc_list if x != -1.0])
-
 def draw_pixel(y_pred, threshold=None):
     color = COLORS1
     is_batch = len(y_pred.shape) == 4
@@ -75,9 +48,8 @@ def draw_pixel(y_pred, threshold=None):
         y_pred = np.expand_dims(y_pred, axis=0)
 
     class_num = y_pred.shape[-1]
-
     if threshold is None:
-        mask_pred = np.argmax(mask_pred, axis=-1)
+        mask_pred = np.argmax(y_pred, axis=-1)
         mask_output = np.zeros(list(mask_pred.shape)+[3])
         for i in range(1, class_num):
             mask_output[np.where(mask_pred==i)] = color[i]
