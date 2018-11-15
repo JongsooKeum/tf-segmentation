@@ -12,13 +12,13 @@ slim = tf.contrib.slim
 class SegNet(metaclass=ABCMeta):
     """Base class for Convolutional Neural Networks for segmentation."""
 
-    def __init__(self, num_classes, input_shape=None, **kwargs):
+    def __init__(self, input_shape, num_classes, **kwargs):
 
         if input_shape is None:
             input_shape = [None, None, 3]
         self.X = tf.placeholder(tf.float32, [None] + input_shape)
         self.y = tf.placeholder(
-            tf.int32, [None] + input_shape[:1] + [num_classes])
+            tf.int32, [None] + input_shape[:2] + [num_classes])
         self.is_train = tf.placeholder(tf.bool)
         self.num_classes = num_classes
         self.d = self._build_model(**kwargs)
@@ -71,7 +71,7 @@ class SegNet(metaclass=ABCMeta):
             else:
                 _batch_size = batch_size
             X, _ = dataset.next_batch(
-                _batch_size, shuffle=False, is_train=False)
+                _batch_size, shuffle=False)
             # Compute predictions
             # (N, H, W, num_classes)
             y_pred = sess.run(self.pred, feed_dict={
@@ -160,3 +160,4 @@ class GCN(SegNet):
     def _build_loss(self, **kwargs):
         softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
                         labels=self.y, logits=self.logits, dim=-1)
+        return tf.reduce_mean(softmax_loss)
