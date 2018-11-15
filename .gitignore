@@ -1,4 +1,6 @@
 *.log
+*.ckpt*
+checkpoint
 .ipynb_checkpoints
 Untitled*.ipynb
 .gitignore
