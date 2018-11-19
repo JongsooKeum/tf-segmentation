@@ -14,7 +14,7 @@ def read_data(data_dir, image_size, no_label=False):
              y_set: np.ndarray, shape: (N, H, W, num_classes (include background)).
     """
     im_paths = []
-    im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.png')))
+    im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.jpg')))
     imgs = []
     labels = []
 
