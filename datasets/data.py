@@ -29,15 +29,15 @@ def read_data(data_dir, image_size, no_label=False):
             labels.append(0)
             continue
 
-        mask_path = os.path.join(data_dir, 'masks', '{}_mask.png'.format(im_name))
+        mask_path = os.path.join(data_dir, 'masks', '{}.png'.format(im_name))
         mask = cv2.imread(mask_path)
         mask = crop_shape(mask, image_size)
         mask = padding(mask, image_size)
         label = np.zeros((image_size[0], image_size[1], 2), dtype=np.float32)
-        idx = np.where(mask == 0)
+        idx = np.where(mask == 2)
         label[idx[0],idx[1],0] = 1
         # The task is binary segmentation!
-        idx = np.where(mask != 0)
+        idx = np.where(mask != 2)
         label[idx[0],idx[1],1] = 1
         labels.append(label)
 
