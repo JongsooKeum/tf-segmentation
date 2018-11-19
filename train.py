@@ -7,12 +7,12 @@ from learning.optimizers import AdamOptimizer as Optimizer
 from learning.evaluators import AccuracyEvaluator as Evaluator
 
 """ 1. Load and split datasets """
-root_dir = os.path.join('data/PennFudanPed/') # FIXME
+root_dir = os.path.join('data/catdog/') # FIXME
 trainval_dir = os.path.join(root_dir, 'train')
 
 # Set image size and number of class
 IM_SIZE = (512, 512)
-NUM_CLASSES = 2 # Binary Segmentation
+NUM_CLASSES = 3
 
 # Load trainval set and split into train/val sets
 X_trainval, y_trainval = dataset.read_data(trainval_dir, IM_SIZE)
