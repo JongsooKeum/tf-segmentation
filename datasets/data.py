@@ -17,7 +17,6 @@ def read_data(data_dir, image_size, no_label=False):
     im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.jpg')))
     imgs = []
     labels = []
-
     for im_path in im_paths:
         im_name = os.path.splitext(os.path.basename(im_path))[0]
         im = cv2.imread(im_path)
@@ -34,12 +33,15 @@ def read_data(data_dir, image_size, no_label=False):
         mask = crop_shape(mask, image_size)
         mask = padding(mask, image_size)
 
-        label = np.zeros((image_size[0], image_size[1], 2), dtype=np.float32)
+        label = np.zeros((image_size[0], image_size[1], 3), dtype=np.float32)
         idx = np.where(mask == 2)
         label[idx[0],idx[1],0] = 1
         # The task is binary segmentation!
         idx = np.where(mask != 2)
-        label[idx[0],idx[1],1] = 1
+        if im_name[0].isupper():
+            label[idx[0],idx[1],1] = 1
+        else:
+            label[idx[0],idx[1],2] = 1
         labels.append(label)
 
     X_set = np.array(imgs, dtype=np.float32)

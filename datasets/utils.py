@@ -15,7 +15,7 @@ def _padding_img(img, pad_size):
     pad_w = (pad_size[1] - orig_size[1]) // 2
     pad_h = (pad_size[0] - orig_size[0]) // 2
     img = np.pad(img, ((pad_h, pad_h), (pad_w, pad_w), (0, 0)),
-                 'constant', constant_values=0)
+                 'constant', constant_values=2)
     return img
 
 def crop_shape(img, crop_size):
