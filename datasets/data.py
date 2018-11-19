@@ -34,7 +34,7 @@ def read_data(data_dir, image_size, no_label=False):
         mask_path = os.path.join(data_dir, 'masks', '{}.png'.format(im_name))
         mask = cv2.imread(mask_path)
         mask = crop_shape(mask, image_size)
-        mask = padding(mask, image_size)
+        mask = padding(mask, image_size, fill=2)
 
         label = np.zeros((image_size[0], image_size[1], 3), dtype=np.float32)
         # Pixel annotations 1:Foreground, 2:Background, 3:Unknown
