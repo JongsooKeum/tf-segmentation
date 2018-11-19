@@ -4,6 +4,8 @@ import glob
 import cv2
 from datasets.utils import padding, crop_shape
 
+EXT = ['jpg', 'png', 'jpeg']
+
 def read_data(data_dir, image_size, no_label=False):
     """
     Load the data and preprocessing for Segmentation task
@@ -14,7 +16,8 @@ def read_data(data_dir, image_size, no_label=False):
              y_set: np.ndarray, shape: (N, H, W, num_classes (include background)).
     """
     im_paths = []
-    im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.jpg')))
+    for x in EXT:
+        im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.{}'.format(x))))
     imgs = []
     labels = []
     for im_path in im_paths:
