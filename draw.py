@@ -5,7 +5,6 @@ import numpy as np
 import tensorflow as tf
 from datasets import data as dataset
 from models.nn import GCN as ConvNet
-from learning.evaluators import AccuracyEvaluator as Evaluator
 from learning.utils import draw_pixel
 
 """ 1. Load dataset """
@@ -33,13 +32,11 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 
 model = ConvNet([IM_SIZE[0], IM_SIZE[1], 3], NUM_CLASSES, **hp_d)
-evaluator = Evaluator()
 saver = tf.train.Saver()
 
 sess = tf.Session(graph=graph, config=config)
 saver.restore(sess, './model.ckpt')    # restore learned weights
 test_y_pred = model.predict(sess, test_set, **hp_d)
-
 
 """ 4. Draw boxes on image """
 draw_dir = os.path.join(test_dir, 'draws') # FIXME
