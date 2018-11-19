@@ -14,7 +14,7 @@ test_dir = os.path.join(root_dir, 'test')
 
 # Set image size and number of class
 IM_SIZE = (512, 512)
-NUM_CLASSES = 2 # Binary Segmentation
+NUM_CLASSES = 3
 
 # Load test set
 X_test, y_test = dataset.read_data(test_dir, IM_SIZE)
