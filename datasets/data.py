@@ -37,9 +37,11 @@ def read_data(data_dir, image_size, no_label=False):
         mask = padding(mask, image_size)
 
         label = np.zeros((image_size[0], image_size[1], 3), dtype=np.float32)
+        # Pixel annotations 1:Foreground, 2:Background, 3:Unknown
+        # But, unknown pixels also can be dealt with foreground.
         idx = np.where(mask == 2)
         label[idx[0],idx[1],0] = 1
-        # The task is binary segmentation!
+
         idx = np.where(mask != 2)
         if im_name[0].isupper():
             label[idx[0],idx[1],1] = 1
