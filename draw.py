@@ -47,7 +47,7 @@ if not os.path.isdir(draw_dir):
     os.mkdir(draw_dir)
 im_dir = os.path.join(test_dir, 'images') # FIXME
 im_paths = []
-im_paths.extend(glob.glob(os.path.join(im_dir, '*.jpg')))
+im_paths.extend(glob.glob(os.path.join(im_dir, '*.jpeg')))
 test_outputs = draw_pixel(test_y_pred)
 test_results = test_outputs + test_set.images
 for img, im_path in zip(test_results, im_paths):
