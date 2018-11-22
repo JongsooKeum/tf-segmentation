@@ -26,7 +26,7 @@ def plot_learning_curve(exp_idx, step_losses, step_scores, eval_scores=None,
         axes[1].set_ylim(0.5, 1.0)
     else:    # mode == 'min'
         axes[1].set_ylim(0.0, 0.5)
-    axes[1].set_ylabel('Error rate')
+    axes[1].set_ylabel('Pixel Accuracy')
     axes[1].set_xlabel('Number of epochs')
 
     # Save plot as image file

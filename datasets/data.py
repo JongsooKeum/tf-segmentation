@@ -21,16 +21,18 @@ def read_data(data_dir, image_size, no_label=False):
     imgs = []
     labels = []
     for im_path in im_paths:
+        # image load
         im_name = os.path.splitext(os.path.basename(im_path))[0]
         im = cv2.imread(im_path)
         im = crop_shape(im, image_size)
         im = padding(im, image_size)
-
         imgs.append(im)
+
         if no_label:
             labels.append(0)
             continue
 
+        # mask load
         mask_path = os.path.join(data_dir, 'masks', '{}.png'.format(im_name))
         mask = cv2.imread(mask_path)
         mask = crop_shape(mask, image_size)

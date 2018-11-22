@@ -45,27 +45,35 @@ class Evaluator(metaclass=ABCMeta):
         pass
 
 class AccuracyEvaluator(Evaluator):
-
+    """ Evaluator with Recall metric."""
     @property
     def worst_score(self):
-
+        """The worst performance score."""
         return 0.0
 
     @property
     def mode(self):
-
+        """The mode for performance score."""
         return 'max'
 
     def score(self, y_true, y_pred):
+        """Compute Pixel Accuracy for a given predicted mask"""
         acc = []
         for t, p in zip(y_true, y_pred):
+            # ignore unknwon region
             ignore = np.where(t[...,0].reshape(-1) == -1)
             acc.append(accuracy_score(np.delete(t.argmax(axis=-1).reshape(-1), ignore[0]),
                                       np.delete(p.argmax(axis=-1).reshape(-1), ignore[0])))
         return sum(acc)/len(acc)
 
     def is_better(self, curr, best, **kwargs):
-
+        """
+        Return whether current performance scores is better than current best,
+        with consideration of the relative threshold to the given performance score.
+        :param kwargs: dict, extra arguments.
+            - score_threshold: float, relative threshold for measuring the new optimum,
+                               to only focus on significant changes.
+        """
         score_threshold = kwargs.pop('score_threshold', 1e-4)
         relative_eps = 1.0 + score_threshold
         return curr > best * relative_eps

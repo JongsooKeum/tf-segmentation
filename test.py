@@ -43,7 +43,7 @@ test_score = evaluator.score(test_set.labels, test_y_pred)
 
 print('Test accuracy: {}'.format(test_score))
 
-""" 4. Draw boxes on image """
+""" 4. Draw masks on image """
 draw_dir = os.path.join(test_dir, 'draws') # FIXME
 if not os.path.isdir(draw_dir):
     os.mkdir(draw_dir)

@@ -13,7 +13,11 @@ class SegNet(metaclass=ABCMeta):
     """Base class for Convolutional Neural Networks for segmentation."""
 
     def __init__(self, input_shape, num_classes, **kwargs):
-
+        """
+        model initializer
+        :param input_shape: tuple, shape (H, W, C)
+        :param num_classes: int, total number of classes
+        """
         if input_shape is None:
             input_shape = [None, None, 3]
         self.X = tf.placeholder(tf.float32, [None] + input_shape)
@@ -34,12 +38,13 @@ class SegNet(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
     def _build_loss(self, **kwargs):
-        ignore = tf.cast(tf.greater_equal(self.y[...,0], 0), dtype=tf.float32)
-        softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
-                        labels=self.y, logits=self.logits, dim=-1)
-        loss = tf.multiply(softmax_loss, ignore)
-        return tf.reduce_mean(loss)
+        """
+        build loss function for the model training.
+        This should be implemented.
+        """
+        pass
 
     def predict(self, sess, dataset, verbose=False, **kwargs):
         """
@@ -87,13 +92,12 @@ class SegNet(metaclass=ABCMeta):
 
 
 class GCN(SegNet):
-
+    """GCN class"""
     def _build_model(self, **kwargs):
         d = dict()
         num_classes = self.num_classes
         pretrain = kwargs.pop('pretrain', True)
         frontend = kwargs.pop('frontend', 'resnet_v2_50')
-        num_anchors = kwargs.pop('num_anchors', 9)
 
         if pretrain:
             frontend_dir = os.path.join(
@@ -155,3 +159,15 @@ class GCN(SegNet):
             d['pred'] = tf.nn.softmax(d['logits'], axis=-1)
 
         return d
+
+    def _build_loss(self, **kwargs):
+        """
+        Build loss function for the model training.
+        :return tf.Tensor.
+        """
+        # Calculate pixel-wise cross_entropy loss and Ignore Unknown region
+        real = tf.cast(tf.greater_equal(self.y[...,0], 0), dtype=tf.float32)
+        softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
+                        labels=self.y, logits=self.logits, dim=-1)
+        loss = tf.multiply(softmax_loss, real)
+        return tf.reduce_mean(loss)

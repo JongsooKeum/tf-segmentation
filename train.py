@@ -4,6 +4,7 @@ import tensorflow as tf
 from datasets import data as dataset
 from models.nn import GCN as ConvNet
 from learning.optimizers import AdamOptimizer as Optimizer
+# from learning.optimizers import MomentumOptimizer as Optimizer
 from learning.evaluators import AccuracyEvaluator as Evaluator
 
 """ 1. Load and split datasets """
