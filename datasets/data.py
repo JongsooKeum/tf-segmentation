@@ -37,16 +37,17 @@ def read_data(data_dir, image_size, no_label=False):
         mask = padding(mask, image_size, fill=2)
 
         label = np.zeros((image_size[0], image_size[1], 3), dtype=np.float32)
+        label.fill(-1)
         # Pixel annotations 1:Foreground, 2:Background, 3:Unknown
         # But, unknown pixels also can be dealt with foreground.
         idx = np.where(mask == 2)
-        label[idx[0],idx[1],0] = 1
+        label[idx[0],idx[1],:] = [1, 0, 0]
 
-        idx = np.where(mask != 2)
+        idx = np.where(mask == 1)
         if im_name[0].isupper():
-            label[idx[0],idx[1],1] = 1
+            label[idx[0],idx[1],:] = [0, 1, 0]
         else:
-            label[idx[0],idx[1],2] = 1
+            label[idx[0],idx[1],:] = [0, 0, 1]
         labels.append(label)
 
     X_set = np.array(imgs, dtype=np.float32)

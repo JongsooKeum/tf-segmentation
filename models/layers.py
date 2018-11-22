@@ -57,3 +57,40 @@ def global_conv_module(x, filters, kernel_size):
     l2 = conv_layer(l1, filters, (1, kr), (1, 1))
     r2 = conv_layer(r1, filters, (kl, 1), (1, 1))
     return l2 + r2
+
+def feature_pyramid_attention(x, filters):
+    gp = tf.reduce_mean(x, axis=[1,2], keepdims=True)
+    gp_conv = conv_layer(gp, filters, (1, 1), (1, 1))
+
+    orig = conv_layer(x, filters, (1, 1), (1, 1))
+
+    down1 = tf.nn.avg_pool(x, [1, 2, 2, 1], [1, 2, 2, 1], 'SAME')
+    down1_conv1 = conv_layer(down1, filters, (7, 7), (1, 1))
+    down1_conv2 = conv_layer(down1_conv1, filters, (7, 7), (1, 1))
+
+    down2 = tf.nn.avg_pool(down1_conv1, [1, 2, 2, 1], [1, 2, 2, 1], 'SAME')
+    down2_conv1 = conv_layer(down2, filters, (5, 5), (1, 1))
+    down2_conv2 = conv_layer(down2_conv1, filters, (5, 5), (1, 1))
+
+    down3 = tf.nn.avg_pool(down2_conv1, [1, 2, 2, 1], [1, 2, 2, 1], 'SAME')
+    down3_conv1 = conv_layer(down3, filters, (3, 3), (1, 1))
+    down3_conv2 = conv_layer(down3_conv1, filters, (3, 3), (1, 1))
+
+    up8 = up_scale(down3_conv2, 2) + down2_conv2
+    up16 = up_scale(up8, 2) + down1_conv2
+    up32 = (up_scale(up16, 2) * orig) + gp_conv
+
+    return up32
+
+def global_attention_upsample(low, high, filters, is_train, scale=2):
+    low = conv_layer(low, filters, (3, 3), (1, 1))
+    gp = tf.reduce_mean(high, axis=[1,2], keepdims=True)
+    gp = conv_bn_relu(gp, filters, (1, 1), is_train, (1, 1))
+    x = gp*low
+    if scale is None:
+        up = high
+    else:
+        up = up_scale(high, scale)
+    x = x + up
+    return x
+

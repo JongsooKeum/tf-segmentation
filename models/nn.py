@@ -2,7 +2,7 @@ import time
 from abc import abstractmethod, ABCMeta
 import tensorflow as tf
 import numpy as np
-from models.layers import conv_layer, boundary_refine_module, global_conv_module, up_scale
+from models.layers import conv_layer, boundary_refine_module, global_conv_module, up_scale, feature_pyramid_attention, global_attention_upsample
 from tensorflow.contrib.slim.nets import resnet_v2 as resnet_v2
 import os
 
@@ -34,13 +34,12 @@ class SegNet(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
     def _build_loss(self, **kwargs):
-        """
-        build loss function for the model training.
-        This should be implemented.
-        """
-        pass
+        ignore = tf.cast(tf.greater_equal(self.y, 0), dtype=tf.float32)
+        softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
+                        labels=self.y, logits=self.logits, dim=-1)
+        loss = tf.multiply(tf.expand_dims(softmax_loss, axis=-1), ignore)
+        return tf.reduce_mean(loss)
 
     def predict(self, sess, dataset, verbose=False, **kwargs):
         """
@@ -156,8 +155,3 @@ class GCN(SegNet):
             d['pred'] = tf.nn.softmax(d['logits'], axis=-1)
 
         return d
-
-    def _build_loss(self, **kwargs):
-        softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
-                        labels=self.y, logits=self.logits, dim=-1)
-        return tf.reduce_mean(softmax_loss)
