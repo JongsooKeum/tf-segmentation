@@ -35,10 +35,10 @@ class SegNet(metaclass=ABCMeta):
         pass
 
     def _build_loss(self, **kwargs):
-        ignore = tf.cast(tf.greater_equal(self.y, 0), dtype=tf.float32)
+        ignore = tf.cast(tf.greater_equal(self.y[...,0], 0), dtype=tf.float32)
         softmax_loss = tf.nn.softmax_cross_entropy_with_logits_v2(
                         labels=self.y, logits=self.logits, dim=-1)
-        loss = tf.multiply(tf.expand_dims(softmax_loss, axis=-1), ignore)
+        loss = tf.multiply(softmax_loss, ignore)
         return tf.reduce_mean(loss)
 
     def predict(self, sess, dataset, verbose=False, **kwargs):

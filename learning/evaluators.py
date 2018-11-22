@@ -59,8 +59,9 @@ class AccuracyEvaluator(Evaluator):
     def score(self, y_true, y_pred):
         acc = []
         for t, p in zip(y_true, y_pred):
-            acc.append(accuracy_score(t.argmax(axis=-1).reshape(-1),
-                                      p.argmax(axis=-1).reshape(-1)))
+            ignore = np.where(t[...,0].reshape(-1) == -1)
+            acc.append(accuracy_score(np.delete(t.argmax(axis=-1).reshape(-1), ignore[0]),
+                                      np.delete(p.argmax(axis=-1).reshape(-1), ignore[0])))
         return sum(acc)/len(acc)
 
     def is_better(self, curr, best, **kwargs):
