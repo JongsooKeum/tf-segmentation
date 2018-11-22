@@ -19,6 +19,7 @@ def plot_learning_curve(exp_idx, step_losses, step_scores, eval_scores=None,
     axes[0].plot(np.arange(1, len(step_losses)+1), step_losses, marker='')
     axes[0].set_ylabel('loss')
     axes[0].set_xlabel('Number of iterations')
+    axes[0].set_ylim(0.0, 2)
     axes[1].plot(np.arange(1, len(step_scores)+1), step_scores, color='b', marker='')
     if eval_scores is not None:
         axes[1].plot(np.arange(1, len(eval_scores)+1), eval_scores, color='r', marker='')
