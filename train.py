@@ -3,8 +3,8 @@ import numpy as np
 import tensorflow as tf
 from datasets import data as dataset
 from models.nn import GCN as ConvNet
-from learning.optimizers import AdamOptimizer as Optimizer
-# from learning.optimizers import MomentumOptimizer as Optimizer
+# from learning.optimizers import AdamOptimizer as Optimizer
+from learning.optimizers import MomentumOptimizer as Optimizer
 from learning.evaluators import AccuracyEvaluator as Evaluator
 
 """ 1. Load and split datasets """
@@ -27,7 +27,7 @@ hp_d = dict()
 
 # FIXME: Training hyperparameters
 hp_d['batch_size'] = 8
-hp_d['num_epochs'] = 300
+hp_d['num_epochs'] = 100
 hp_d['init_learning_rate'] = 1e-3
 hp_d['momentum'] = 0.9
 hp_d['learning_rate_patience'] = 10
