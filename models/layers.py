@@ -39,17 +39,28 @@ def conv_bn_relu(x, filters, kernel_size, is_train, strides=(1, 1), padding='SAM
         return bn
 
 def up_scale(x, scale=2):
+    """
+    2x up scaling using bilinear upsampling
+    """
     size = (tf.shape(x)[1]*scale, tf.shape(x)[2]*scale)
     x = tf.image.resize_bilinear(x, size)
     return tf.cast(x, x.dtype)
 
 def boundary_refine_module(x, filters):
+    """
+    see: Large Kernel Matters -- Improve Semantic Segmentation by Global Convolutional Network
+    https://arxiv.org/abs/1703.02719
+    """
     c1 = conv_layer(x, filters, (3, 3), (1, 1))
     r = tf.nn.relu(c1)
     c2 = conv_layer(x, filters, (3, 3), (1, 1))
     return x + c2
 
 def global_conv_module(x, filters, kernel_size):
+    """
+    see: Large Kernel Matters -- Improve Semantic Segmentation by Global Convolutional Network
+    https://arxiv.org/abs/1703.02719
+    """
     kl = kernel_size[0]
     kr = kernel_size[1]
     l1 = conv_layer(x, filters, (kl, 1), (1, 1))

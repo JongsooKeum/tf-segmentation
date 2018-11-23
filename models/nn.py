@@ -92,7 +92,11 @@ class SegNet(metaclass=ABCMeta):
 
 
 class GCN(SegNet):
-    """GCN class"""
+    """
+    GCN class
+    see: Large Kernel Matters -- Improve Semantic Segmentation by Global Convolutional Network
+    https://arxiv.org/abs/1703.02719
+    """
     def _build_model(self, **kwargs):
         d = dict()
         num_classes = self.num_classes
